@@ -1,0 +1,39 @@
+{
+  "input": "/data/model/kws_crnn_small.onnx",
+  "output_dir": "/data/output",
+  "output_name": "kws_int8.axmodel",
+  "model_type": "ONNX",
+
+  "target_hardware": "AX620E",
+  "npu_mode": "NPU1",
+
+  "input_shapes": "input:1x1x98x64",
+
+  "onnx_opt": {
+    "enable_onnxsim": true,
+    "model_check": true
+  },
+
+  "quant": {
+    "calibration_method": "MinMax",
+    "input_configs": [
+      {
+        "tensor_name": "input",
+        "calibration_dataset": "/data/dataset/calib_kws.tar",
+        "calibration_format": "Numpy",
+        "calibration_size": -1,
+        "calibration_mean": [],
+        "calibration_std": []
+      }
+    ],
+    "check": 0,
+    "device": "cpu"
+  },
+
+  "compiler": {
+    "check": 0,
+    "check_mode": "CheckOutput",
+    "check_rtol": 1e-5,
+    "check_atol": 0
+  }
+}

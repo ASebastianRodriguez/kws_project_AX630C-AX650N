@@ -1,0 +1,7 @@
+/.venv
+/data/binary_for_npu
+/data/calib_samples
+/data/generados_automaticamente
+/data/onnx_model
+/data/tensores
+/data/trained_tensor

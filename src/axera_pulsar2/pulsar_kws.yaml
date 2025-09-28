@@ -1,0 +1,14 @@
+# pulsar_kws.yaml
+model:
+  onnx: ./kws_es_crnn.onnx
+compile:
+  target: ax630c        # o ax650n
+  batch: 1
+  quant:
+    weight_bits: 8
+    act_bits: 8
+    scheme: per_tensor
+  optim:
+    fused_ops: true
+output:
+  dir: ./axmodel_kws_es
