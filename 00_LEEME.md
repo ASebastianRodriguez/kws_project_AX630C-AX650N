@@ -1,4 +1,5 @@
-# KWS para M5 Stack LLM Kit (Axera AX630C)
+# KeyWord Spotting (KWS) para M5Stack LLM Kit (Axera AX630C) 
+# Con leves cambios es funcional en AX650N
 
 ## 1) Datos iniciales:
 - Desarrollado por:     ASRC.
@@ -8,8 +9,8 @@
 - Python Versión:         3.13.7  
 
 
-## 1) Introducción:
-Debido a que no hay algoritmos basados en redes neuronales del tipo Keyword Spotting (KWS) que entiendan variantes del idioma español como el que se habla en Argentina, se diseña una serie de scripts en Python con los cuales se realizarán las tareas de generación de dataset en base a solamente 1 comando por voz grabado de cada tipo y una serie limitadas de audios de fondo con diferente ruido ambiente.
+## 2) Introducción:
+Dado que no existen algoritmos basados en redes neuronales del tipo Keyword Spotting (KWS) que comprendan variantes del idioma español como el hablado en Argentina, se diseña una serie de scripts en Python con los cuales se realizarán las tareas de generación de dataset en base a un solo comando de voz grabado por clase y una serie limitada de audios de fondo con diferentes ruidos ambientales.
 
 Para esto se utilizará una red neuronal muy simple que pueda leer tensores con dimensión **float32[1,1,98,64]** dentro de los cuales se encuentran espectrogramas en formato log-Mel, el significado de las dimensiones es:
 
@@ -32,7 +33,7 @@ Son los frames en el tiempo de tu log-Mel. Cada frame corresponde a una ventana 
 4. Cuarto valor 64 → dimensión frecuencial (bandas Mel):
 Es el número de coeficientes log-Mel extraídos por frame. Cada valor representa la energía en una banda de frecuencia. 64 se eligió como parámetro n_mels al calcular el espectrograma. Es el eje que representa la información espectral del audio.
 
-## 2) Diagrama de flujo de funcionamiento del software:
+## 3) Diagrama de flujo de funcionamiento del software:
 ```
 ┌───────────┐      ┌──────────────────────────┐       ┌──────────────────────┐
 │ Micrófono │ ───▶│ Front-end de Audio       │  ───▶ │ Extracción de        │
@@ -90,22 +91,22 @@ Es el número de coeficientes log-Mel extraídos por frame. Cada valor represent
                                    └──────────────────────────────────────────────┘
 ```
 
-## 3) Esquema de directorios y archivos del proyecto:
+## 4) Esquema de directorios y archivos del proyecto:
 ```
 kws_project/
   ├── .venv (Ambiente virtual con módulos de Python instalados)
-  ├── data (carpeta conteniendo datos: audios seed, audios de calibración, audios generados con algoritmos de aumento de muestras en forma automática y tensores.)
+  ├── data (Carpeta que contiene: audios seed, audios de calibración, audios generados con aumentación automática y tensores.)
   ├── src (Código fuente conteniendo los scripts escritos en Python.)
   ├── README.md (Archivo de ayuda en formato MarkDown.)
-  └── requirements.txt (Archivos con los módulos de Python requeridos para que funcionen los scripts escritos en Python, se instalar con "pip install -r requirements.txt")
+  └── requirements.txt (Archivo con los módulos de Python requeridos para que funcionen los scripts. Se instala con "pip install -r requirements.txt")
 ```
 
-## 4) Pasos a seguir y uso de los scripts:
-### a) Grabar un archivo .WAV con cada una de la órdenes ruidos de fondo:
-Para esto se puede utilizar cualquier grabador de voz de cualquier sistema operativo. Ejemplo: Audacity, Adobe Premiere Pro, Grabadora de Sonido de Windows, etc.
-Con respecto a los ruidos de fondo, es necesario realizar una evaluación de los ruidos que se creen que prevalecerán durante el funcionamiento del KWS, es posible buscar diferentes sonidos en Internet y convertirlos con Audacity a .WAV.
+## 5) Pasos a seguir y uso de los scripts:
+### a) Grabar un archivo .WAV con cada una de la órdenes y ruidos de fondo:
+Se puede utilizar cualquier grabador de voz de cualquier sistema operativo (ej. Audacity, Adobe Premiere Pro, Grabadora de Sonido de Windows, etc.).  
+En cuanto a los ruidos de fondo, es necesario evaluar cuáles prevalecerán durante el funcionamiento del KWS. Es posible obtener sonidos de Internet y convertirlos a .WAV con Audacity.
 
-Es recomendable generar un arbol de carpetas de la siguiente manera:
+Es recomendable generar un árbol de carpetas como este:
 ```
 data
   ├── audios (carpeta conteniendo un audio .WAV por cada una de las 7 clases de los comandos y 1 clase con los fondos generados por grabación)
@@ -285,7 +286,7 @@ A la salida del script se verá el siguiente mensaje:
 Listo: 24600/24600 archivos procesados.
 ```
 
-## 5) Entrenamiento de la red neuronal CRNN para uso en KWS con el script **train.py**:
+## 6) Entrenamiento de la red neuronal CRNN para uso en KWS con el script **train.py**:
 Para poder armar y entrenar el modelo KWS basado en redes neuronales se utilizan los siguientes scripts:
 - dataset_from_cache.py: Dataloader que se encargar de leer los tensores guardados en archivos .pt dentro de la carpeta ./tensores.
 - model_crnn.py: Generador de CRNN pequeña (Conv2D + BiGRU + FC).
@@ -383,12 +384,12 @@ Qué conviene hacer:
 - Exportá a ONNX una vez conforme con test.
 
 #### Ejemplo 1 - Igual que ahora (sin early stop):
-python train.py --cache-root ./tensores --ckpt-dir ./models --ckpt-name kws_crnn_small.pt
+> python train.py --cache-root ./tensores --ckpt-dir ./models --ckpt-name kws_crnn_small.pt
 
 #### Ejemplo 2 - Con early stop (patience 5, min_delta 1e-4):
-python train.py --cache-root ./tensores --ckpt-dir ./models --ckpt-name kws_crnn_small.pt --early-stop --patience 5 --min-delta 1e-4
+> python train.py --cache-root ./tensores --ckpt-dir ./models --ckpt-name kws_crnn_small.pt --early-stop --patience 5 --min-delta 1e-4
 
-## 5) Exportador a modelo ONNX **export_onnx.py**:
+## 7) Exportador a modelo ONNX **export_onnx.py**:
 Este script convierte **kws_crnn.pt** en **kws_crnn.onxx**, es decir convierte el modelo tensorial en un archivo con formato Open Neural Network Exchange (ONNX). Al final genera un archivo **kws_crnn.onnx** con n-mel (número de bandas Mel) y T (número de frames temporales) configurables.
 Por defecto n-Mel=64 y T=98.
 
@@ -421,7 +422,7 @@ python export_onnx.py --ckpt-path ./kws_crnn_small.pt --onnx-out-dir ./onnx_mode
 python .\export_onnx.py --ckpt-path D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\trained_tensor\kws_crnn_small.pt --onnx-out-dir D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\onnx_model --onnx-out-name kws_crnn_small.onnx
 ```
 
-## 6) Generación de datos de calibración para modelo *.axmodel** con script **make_calib.py**:
+## 8) Generación de datos de calibración para modelo *.axmodel** con script **make_calib.py**:
 Este script genera los datos de calibración para que Pulsar2 pueda:
 - Sirven para cuantizar bien el modelo a INT8.
 - Se usan solo en la compilación, no en la inferencia.
@@ -467,7 +468,7 @@ Ejemplo de ejecución:
 python.exe .\make_calib.py --pt-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\tensores --out-dir D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\calib_samples --calib-format "Numpy" --t 98 --n-mels 64 --max-samples 300 --seed 123 --tar-name "calib_kws.tar"
 ```
 
-## 7) Generador de archivos .bin para prueba directamente en el M5Stack - AX630C:
+## 9) Generador de archivos .bin para prueba directamente en el M5Stack - AX630C:
 Este script sirve para convertir el dataset de calibración en archivos .bin que entienda directamente el comando **ax_run_model** dentro del Ubuntu 22.04 dentro del M5Stack - AX630C.
 
 Valores por defecto en caso de sólo ejecutar el script:
@@ -489,76 +490,77 @@ options:
   --strict-bin          Validate .bin size equals T*F*4 bytes (float32)
 ```
 
-## 8) Diagrama en Bloques del flujo previsto de la CRNN (Convolucional)
+## 10) Diagrama en Bloques del flujo previsto de la CRNN (Convolucional):
 ```
-        ┌──────────────────────────────────────────────────────────┐
-        │                  INPUT  (NCHW = 1×1×T×M)                 │
-        │                     features[1,1,98,64]                  │
-        └───────────────┬──────────────────────────────────────────┘
-                        │
-                        ▼
-               ┌─────────────────┐
-               │  Conv2D #1      │  k=3×3, s=1, p=1
-               └───────┬─────────┘
-                       │
-                       ▼
-               ┌─────────────────┐
-               │  ReLU           │
-               └───────┬─────────┘
-                       │
-                       ▼
-               ┌─────────────────┐
-               │  MaxPool2D #1   │  k=2×2, s=2
-               │  ↓↓ T, ↓↓ M     │  ≈ 98→49, 64→32
-               └───────┬─────────┘
-                       │
-                       ▼
-               ┌─────────────────┐
-               │  Conv2D #2      │  k=3×3, s=1, p=1
-               └───────┬─────────┘
-                       │
-                       ▼
-               ┌─────────────────┐
-               │  ReLU           │
-               └───────┬─────────┘
-                       │
-                       ▼
-               ┌─────────────────┐
-               │  MaxPool2D #2   │  k=2×2, s=2
-               │  ↓↓ T, ↓↓ M     │  ≈ 49→24, 32→16
-               └───────┬─────────┘
-                       │
-                       ▼
-     ┌───────────────────────────────────────────────────────────────┐
-     │   Permute / Reshape a SECUENCIA (para RNN)                    │
-     │   N×C×T×F  ──►  N×T×(C·F)                                     │
-     │   (C = canales tras Conv2; F ≈ 16; T ≈ 24)                    │
-     └───────────────┬───────────────────────────────────────────────┘
-                     │
-                     ▼
-              ┌───────────────────┐
-              │   GRU (RNN)       │  (1 capa; posiblemente bi-dir)
-              │   secuencia T×D   │
-              └─────────┬─────────┘
-                        │  (toma el último/mean pooling sobre T)
-                        ▼
-               ┌──────────────────┐
-               │   GEMM / FC      │  → 8 logits (clases)
-               └─────────┬────────┘
-                         │
-                         ▼
-                ┌─────────────────┐
-                │   Softmax       │  (normalización p/ lectura)
-                └─────────────────┘
-                         │
-                         ▼
-             ┌───────────────────────────┐
-             │  OUTPUT: logits[1, 8]     │
-             │  {ACOPLAR, CANCELAR, ...} │
-             └───────────────────────────┘
+      ┌──────────────────────────────────────────────────────────┐
+      │                INPUT  (NCHW = 1×1×T×M)                   │
+      │                  features[1,1,98,64]                     │
+      └───────────────────────────┬──────────────────────────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │    Conv2D #1    │  k=3×3, s=1, p=1
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │      ReLU       │
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │  MaxPool2D #1   │  k=2×2, s=2
+                          │   ↓↓ T, ↓↓ M    │  ≈ 98→49, 64→32
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │    Conv2D #2    │  k=3×3, s=1, p=1
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │      ReLU       │
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+                          ┌─────────────────┐
+                          │  MaxPool2D #2   │  k=2×2, s=2
+                          │  ↓↓ T, ↓↓ M     │  ≈ 49→24, 32→16
+                          └───────┬─────────┘
+                                  │
+                                  ▼
+    ┌───────────────────────────────────────────────────────────────┐
+    │           Permute / Reshape a SECUENCIA (para RNN)            │
+    │           N×C×T×F  ──►  N×T×(C·F)                             │
+    │           (C = canales tras Conv2; F ≈ 16; T ≈ 24)            │
+    └───────────────────────────────┬───────────────────────────────┘
+                                    │
+                                    ▼
+                          ┌───────────────────┐
+                          │     GRU (RNN)     │  (1 capa; posiblemente bi-dir)
+                          │   secuencia T×D   │
+                          └─────────┬─────────┘
+                                    │  (toma el último/mean pooling sobre T)
+                                    ▼
+                          ┌──────────────────┐
+                          │     GEMM / FC    │  → 8 logits (clases)
+                          └─────────┬────────┘
+                                    │
+                                    ▼
+                            ┌─────────────────┐
+                            │     Softmax     │  (normalización p/ lectura)
+                            └───────┬─────────┘
+                                    │
+                                    ▼
+                      ┌───────────────────────────┐
+                      │    OUTPUT: logits[1, 8]   │
+                      │  {ACOPLAR, CANCELAR, ...} │
+                      └───────────────────────────┘
 
 ```
 
+### Explicación de cada bloque de la red neuronal para que funciones el sistema KWS:
 - **Entrada (features [1,1,98,64]):**
 Qué es: Un espectrograma Mel (1 canal, 98 pasos de tiempo, 64 bandas Mel).
 Función: Representar la señal de audio ya transformada a características espectrales.
@@ -607,8 +609,8 @@ Qué es: Vector con 8 valores, uno por clase:
 {ACOPLAR, CANCELAR, CONTINUAR, FONDO, LEVANTADO, PRINCIPAL, REPETIR, SALIR}
 Función: Clasificación final de la palabra clave detectada.
 
-### RESUMEN RÁPIDO DE EJECUCIÓN DE SCRIPTS (DESDE GENERACIÓN DE DATASET HASTA CONVERSIÓN DE ONNX A AXMODEL Y CARGA EN AX630C)
-### Todos los script se ejecutan desde ./src: 
+## 11) Resumen rápido de ejecución de scripts (desde generación de dataset hasta conversión de ONNX a AXMODEL y carga en AX630C):
+### Todos los script se ejecutan desde la carpeta ./src del presente proyecto: 
 > 1) python.exe .\make_dataset.py --seeds-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\seeds --noises-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\seeds\FONDO --out-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\generados_automaticamente
 
 > 2) python.exe .\tensors_generator.py --generate-cache --wav-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\generados_automaticamente --out-root D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\tensores --sr 16000 --n_mels 64 --db --every 50
@@ -621,10 +623,24 @@ Función: Clasificación final de la palabra clave detectada.
 
 > 6) python.exe .\generate_test_files.py --src D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\calib_samples\calib_kws.tar --out-dir D:\04_ProyASRC\VSCode\20250826_M5Stack_LLM-CoreS3\20250921_kws_project\data\binary_for_npu\ 
 
-### A partir del punto 5 debe pasarse al entorno **Pulsar2** para poder convertir el modelo **.onnx** generado al modelo **.axmodel** necesario para que el chip IA Axera AX630C entienda el modelo KWS.
+### A partir del punto 6 debe pasarse al entorno **Pulsar2** para poder convertir el modelo **.onnx** generado al modelo **.axmodel** necesario para que el chip IA Axera AX630C o AX650N puedan entender el modelo KWS.
 
-### Seguir instrucciones de instalación y configuración de Pulsar2 con Docker, en mi caso he utilizado un sistema operativo Windows 11 Pro:
+### Seguir instrucciones de instalación y configuración de Pulsar2 con Docker:
 
+#### Link con indicación de pasos para instalar Pulsa2: [https://pulsar2-docs.readthedocs.io/en/latest/user_guides_quick/quick_start_prepare.html]
+
+#### Copiar el modelo **.onnx**, producto del entrenamiento, dentro del Ubuntu 22.04 del M5Stack LLM Kit, para ello debemos conectarnos al mismo via **ssh** y utilizando el comando SCP desde dentro del módulo:
+> scp "User@192.168.###.###:/./data/output/compiled.axmodel" /root/kws_int8.axmodel
+
+#### Hay dos maneras de convertir el modelo de **.onnx** a **.axmodel**, uno es tipeando desde línea de comandos dentro de Pulsar2 ejecutado en Docker toda la sentencia y la otra (mucho más fácil) es llamando a un archivo de configuración (utilizaremos esta forma): 
+
+Copiamos el archivo de configuración **kws_build_int8_config.json** dentro de la carpeta **/data/config/kws_build_int8_config.json** dentro del sitio de ejecución de Pulsar2:
+> cp kws_build_int8_config.json ./data/config/kws_build_int8_config.json
+
+#### Lanzamos el proceso de compilación dentro de Pulsar2 en Docker que convertirá el modelo **.onnx** a **.axmodel**:
+> pulsar2 build --config /data/config/kws_build_int8_config.json
+
+#### Se verá algo similar a la siguiente salida:
 ```
 root@c9626233eb7d:/data# pulsar2 build --config /data/config/kws_build_int8_config.json
 +-------------+----------------------------+
@@ -767,23 +783,62 @@ build jobs   ━━━━━━━━━━━━━━━━━━━━━━�
 2025-09-28 06:20:36.065 | INFO     | backend.ax620e.linker:link_with_dispatcher:2007 - Total mcode size: 485 KiB
 2025-09-28 06:20:36.096 | INFO     | yamain.command.build:compile_ptq_model:1308 - fuse 1 subgraph(s)
 ```
+#### En caso de no ver algo así en la salida y que de error, se deberá verificar que los pasos del 1 al 6 se hayan realizado bien y luego verificar el archivo **kws_build_int8_config.json**.
 
+#### Si la conversión a **.axmodel** es satisfactoria, será posible ejecutar dentro del M5Stack LLM Kit con AX630C el siguiente comando para verificar que el modelo KWS basado en redes neuronales se ejecute bien:
+> root@m5stack-LLM:~# ax_run_model -m /root/kws_int8.axmodel -w 10 -r 100
 
-# Comandos dentro del Ubuntu 22.04 del módulo LLM Kit y Pulsar2 dentro de Docker:
+- -w 10 = warmup de 10 muestras para estabilizar.
+- -r 100 = Se ejecutan 100 inferencias reales del modelo kws_int8.axmodel.
 
-## Pulsar2:
-root@c9626233eb7d:/data# pulsar2 build --config /data/config/kws_build_int8_config.json
-## M5Stack - AX630C:
-scp "AdminPin5@192.168.70.100:/D:/04_ProyASRC/docker/V4.2/data/output/compiled.axmodel" /root/kws_int8.axmodel
-## M5Stack - AX630C:
+#### Se verá la siguiente salida:
+```
 root@m5stack-LLM:~# ax_run_model -m /root/kws_int8.axmodel -w 10 -r 100
+   Run AxModel:
+         model: /root/kws_int8.axmodel
+          type: Half
+          vnpu: Disable
+      affinity: 0b01
+        warmup: 10
+        repeat: 100
+         batch: { auto: 0 }
+   pulsar2 ver: 4.2 751f68f9
+    engine ver: 2.6.3sp
+      tool ver: 2.3.3sp
+      cmm size: 748716 Bytes
+  ---------------------------------------------------------------------------
+  min =   1.056 ms   max =   1.079 ms   avg =   1.058 ms  median =   1.058 ms
+   5% =   1.062 ms   90% =   1.057 ms   95% =   1.057 ms     99% =   1.056 ms
+  ---------------------------------------------------------------------------
+  ```
+#### Algunos puntos a tener en cuenta:
+- Si bien muestra **type: Half** debería mostrar INT8, no se ha logrado que muestre ese tipo de quantización del modelo KWS, entiendo que debe ser debido al frontend de **ax_run_model**.
+- La salida indica **vnpu: Disable** lo cual es incoherente debido a que, por un lado se ha configurado para que sea ejecutado en NPU1, y por otro, los tiempos de inferencia son P5=1.062ms, P90=1.057ms, P95=1.057ms y P99=1.056ms. Esto indica que no está utilizando los CPU Dual Cortex A53 hasta 1.2GHz.
+- Otra cuestión que se verifica es que posiblemente los labels P5, P90, P95 y P99 estén invertidos, esto debido a que nunca P99 puede tardar menos que P5. Asimismo los valores son estables y coherentes.
 
-## Chequeo M5SUM para archivos .axmodel generados por Pulsar2 y copiados en el M5Stack - AX630C:
-### Pulsar2:
-root@c9626233eb7d:/data/output# md5sum /data/output/kws_int8.axmodel
-dac7b9e00a8abcb782403c927975f81c  /data/output/kws_int8.axmodel
-### M5Stack - AX630C:
-root@m5stack-LLM:~# md5sum kws_int8.axmodel
-dac7b9e00a8abcb782403c927975f81c  kws_int8.axmodel
+#### Se verifica estabilidad y tiempos de inferencia con 5000 muestras:
+```
+root@m5stack-LLM:~# ax_run_model -m /root/kws_int8.axmodel -w 10 -r 5000
+   Run AxModel:
+         model: /root/kws_int8.axmodel
+          type: Half
+          vnpu: Disable
+      affinity: 0b01
+        warmup: 10
+        repeat: 5000
+         batch: { auto: 0 }
+   pulsar2 ver: 4.2 751f68f9
+    engine ver: 2.6.3sp
+      tool ver: 2.3.3sp
+      cmm size: 748716 Bytes
+  ---------------------------------------------------------------------------
+  min =   1.056 ms   max =   1.236 ms   avg =   1.060 ms  median =   1.058 ms
+   5% =   1.064 ms   90% =   1.057 ms   95% =   1.057 ms     99% =   1.056 ms
+  ---------------------------------------------------------------------------
+  ```
+#### Se verifica que para 5000 muestras la estabilidad se mantiene al igual que con 100 muestras.
 
-### Charla con ChatGPT: https://chatgpt.com/c/68c85d68-7be8-8322-a263-c3dc8ecb1d23
+## 12) Disclosure:
+Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro, and Windows Sound Recorder are trademarks or registered trademarks of their respective owners. All product names, logos, and brands mentioned are for identification purposes only. We make no claim of ownership over these marks, and we are not affiliated with, endorsed by, or responsible for them in any way.  
+
+Furthermore, we do not assume any responsibility or liability for issues, damages, or consequences that may arise from the execution, use, or misinterpretation of the algorithms, examples, or procedures provided. All content is for informational and educational purposes only, and any implementation is at the user’s sole risk.
