@@ -9,6 +9,8 @@
 - Python Version:     3.13.7 
 - OS:                         MS Windows 11 Pro   24H2.
 
+### Axera AX630C data [https://en.axera-tech.com/Product/126.html]
+
 ## 2) Introduction:
 Since there are no neural network-based Keyword Spotting (KWS) algorithms that cover variants of the Spanish language such as the one spoken in Argentina, a series of Python scripts are designed to perform dataset generation tasks based on a single voice command recorded per class and a limited set of background audios with different environmental noises.
 
