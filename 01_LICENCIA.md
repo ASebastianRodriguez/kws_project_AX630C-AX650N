@@ -8,6 +8,6 @@ EL SOFTWARE SE PROPORCIONA “TAL CUAL”, SIN GARANTÍA DE NINGÚN TIPO, EXPRES
 
 ## Disclosure:
 
-Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro y Grabadora de Sonido de Windows son marcas comerciales o marcas registradas de sus respectivos propietarios. Todos los nombres de productos, logotipos y marcas mencionados se utilizan únicamente con fines de identificación. No reclamamos ningún derecho de propiedad sobre estas marcas, y no estamos afiliados, avalados ni somos responsables por ellas de ninguna manera.  
+Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro Microsoft, Windows 11 y Grabadora de Sonido de Windows son marcas comerciales o marcas registradas de sus respectivos propietarios. Todos los nombres de productos, logotipos y marcas mencionados se utilizan únicamente con fines de identificación. No reclamamos ningún derecho de propiedad sobre estas marcas, y no estamos afiliados, avalados ni somos responsables por ellas de ninguna manera.  
 
 Asimismo, no asumimos ninguna responsabilidad por problemas, daños o consecuencias que puedan surgir de la ejecución, uso o mala interpretación de los algoritmos, ejemplos o procedimientos proporcionados. Todo el contenido es únicamente con fines informativos y educativos, y cualquier implementación se realiza bajo el propio riesgo del usuario.  

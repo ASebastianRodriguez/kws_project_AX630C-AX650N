@@ -7,6 +7,7 @@
 - Version:                 V1.0.0.
 - Target processor:  Low-cost Axera AX630C.
 - Python Version:     3.13.7 
+- OS:                         MS Windows 11 Pro   24H2.
 
 ## 2) Introduction:
 Since there are no neural network-based Keyword Spotting (KWS) algorithms that cover variants of the Spanish language such as the one spoken in Argentina, a series of Python scripts are designed to perform dataset generation tasks based on a single voice command recorded per class and a limited set of background audios with different environmental noises.
@@ -827,6 +828,6 @@ root@m5stack-LLM:~# ax_run_model -m /root/kws_int8.axmodel -w 10 -r 5000
 #### It is verified that for 5000 samples stability is maintained just as with 100 samples.
 
 ## 12) Disclosure:
-Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro, and Windows Sound Recorder are trademarks or registered trademarks of their respective owners. All product names, logos, and brands mentioned are for identification purposes only. We make no claim of ownership over these marks, and we are not affiliated with, endorsed by, or responsible for them in any way.  
+Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro, Microsoft, Windows 11 and Windows Sound Recorder are trademarks or registered trademarks of their respective owners. All product names, logos, and brands mentioned are for identification purposes only. We make no claim of ownership over these marks, and we are not affiliated with, endorsed by, or responsible for them in any way.  
 
 Furthermore, we do not assume any responsibility or liability for issues, damages, or consequences that may arise from the execution, use, or misinterpretation of the algorithms, examples, or procedures provided. All content is for informational and educational purposes only, and any implementation is at the user’s sole risk.
