@@ -5,3 +5,4 @@
 /data/onnx_model
 /data/tensores
 /data/trained_tensor
+/src/__pycache__
