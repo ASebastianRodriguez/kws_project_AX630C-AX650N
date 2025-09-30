@@ -981,7 +981,14 @@ Top-1: [0] ACOPLAR (100.00%)
 
 Al final la palabra detectada por el KWS es ACOPLAR.
 
-## 14) Disclosure:
+## 14) Niveles de Seguridad Industrial de Pulsar:
+Pulsar2 ha sido sometido a una evaluación de seguridad funcional de acuerdo con la norma ISO-26262 Parte 8.  
+Ha sido clasificado con un Nivel de Confianza de Herramienta 3 (TCL3), respaldado por una cobertura completa de pruebas y procedimientos de manejo de anomalías.  
+La herramienta cuenta con más de 2 años de implementación en múltiples proyectos de clientes y ha superado la certificación de seguridad de terceros.  
+Cuando se utiliza según las instrucciones, Pulsar2 puede aplicarse al desarrollo de modelos con requisitos de seguridad de hasta ASIL-D.  
+Esto garantiza su idoneidad para aplicaciones automotrices e industriales críticas en seguridad.  
+
+## 15) Disclosure:
 Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro Microsoft, Windows 11 y Grabadora de Sonido de Windows son marcas comerciales o marcas registradas de sus respectivos propietarios. Todos los nombres de productos, logotipos y marcas mencionados se utilizan únicamente con fines de identificación. No reclamamos ningún derecho de propiedad sobre estas marcas, y no estamos afiliados, avalados ni somos responsables por ellas de ninguna manera.  
 
 Asimismo, no asumimos ninguna responsabilidad por problemas, daños o consecuencias que puedan surgir de la ejecución, uso o mala interpretación de los algoritmos, ejemplos o procedimientos proporcionados. Todo el contenido es únicamente con fines informativos y educativos, y cualquier implementación se realiza bajo el propio riesgo del usuario.  
