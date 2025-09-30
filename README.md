@@ -1,5 +1,6 @@
-# KeyWord Spotting (KWS) for M5Stack LLM Kit (Axera AX630C) 
-# With minor changes it is functional on AX650N
+# TRAINING A KWS MODEL FROM SCRATCH FOR AX630C/AX650N
+## KeyWord Spotting (KWS) for M5Stack LLM Kit (Axera AX630C) 
+## With minor changes it is functional on AX650N
 
 ## 1) Initial Data:
 - Developed by:      ASRC.
