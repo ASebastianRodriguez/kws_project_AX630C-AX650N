@@ -634,6 +634,39 @@ Función: Clasificación final de la palabra clave detectada.
 #### Copiar el modelo **.onnx**, producto del entrenamiento, dentro del Ubuntu 22.04 del M5Stack LLM Kit, para ello debemos conectarnos al mismo via **ssh** y utilizando el comando SCP desde dentro del módulo:
 > scp "User@192.168.###.###:/./data/output/compiled.axmodel" /root/kws_int8.axmodel
 
+#### Copiar los archivos de calibración dentro del directorio **/root** dentro del Ubuntu 22.04 del M5Stack LLM Kit, para ello debemos conectarnos al mismo via **ssh** y utilizando el comando SCP desde dentro del módulo:
+> scp -r User@192.168.###.###:/D:/04_ProyASRC/VSCode/20250826_M5Stack_LLM-CoreS3/20250921_kws_project/data/binary_for_npu/ /root
+
+Se ha probado ejecutar el comando **ax_run_model** con más de un input, sin suerte. Es por esto que, si bien **generate_test_files.py** genera 300 inputs para calibración, al ejecutar el siguiente comando:
+> ax_run_model -m kws_int8.axmodel -i ./binary_for_npu/input/ -o ./binary_for_npu/output/ -l ./binary_for_npu/list.txt
+
+Con un **list.txt** con 0 a 299 inputs, no funciona, dando el error **} does not has input folder {./binary_for_npu/input/}, skipped.**:
+```
+root@m5stack-LLM:~# ax_run_model -m kws_int8.axmodel -i ./binary_for_npu/input/ -o ./binary_for_npu/output/ -l ./binary_for_npu/list.txt
+  Total found {16} input stimulus folders.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+  Inferring model, total 1/16. Done.
+  ------------------------------------------------------
+  min =   1.277 ms   max =   1.277 ms   avg =   1.277 ms
+  ------------------------------------------------------
+```
+
+No se encuentra forma de ejecutar más de un input con **ax_run_model**, se prueban todos los parámetros posibles, no funciona ninguno. Es por esto que **list.txt** tiene que tener un sólo input, es decir solamente un 0 en la primera línea sin espacios, ni saltos de línea.
+
 #### Hay dos maneras de convertir el modelo de **.onnx** a **.axmodel**, uno es tipeando desde línea de comandos dentro de Pulsar2 ejecutado en Docker toda la sentencia y la otra (mucho más fácil) es llamando a un archivo de configuración (utilizaremos esta forma): 
 
 Copiamos el archivo de configuración **kws_build_int8_config.json** dentro de la carpeta **/data/config/kws_build_int8_config.json** dentro del sitio de ejecución de Pulsar2:
@@ -840,7 +873,115 @@ root@m5stack-LLM:~# ax_run_model -m /root/kws_int8.axmodel -w 10 -r 5000
   ```
 #### Se verifica que para 5000 muestras la estabilidad se mantiene al igual que con 100 muestras.
 
-## 12) Disclosure:
+## 12) Ejecución de **ax_run_model** con un archivo con una muestra de espectrograma real convertido en **.bin**:
+#### Copiar los archivos de calibración dentro del directorio **/root** dentro del Ubuntu 22.04 del M5Stack LLM Kit, para ello debemos conectarnos al mismo via **ssh** y utilizando el comando SCP desde dentro del módulo:
+> scp -r User@192.168.###.###:/D:/04_ProyASRC/VSCode/20250826_M5Stack_LLM-CoreS3/20250921_kws_project/data/binary_for_npu/ /root
+
+#### Estructura de **list.txt** y directorio **./input**:
+Contenido de **input.txt**:
+```
+0
+```
+Esquema de directorio input (tener en cuenta que sólo es posible utilizar el primer archivo dentro de **./input/0/input.bin**, es resto de los directorios no son encontrados por **ax_run_model**):
+```
+binary_for_npu
+  └── input (carpeta conteniendo un audio .WAV por cada una de las 7 clases de los comandos y 1 clase con los fondos generados por grabación)
+        ├── 0
+        |   └── input.bin
+        ├── 1
+        |   └── input.bin
+        ├── 2
+        |   └── input.bin
+        ├── 3
+        |   └── input.bin
+        ├── 4
+        |   └── input.bin
+        ├── 5
+        |   └── input.bin
+        ...
+        └── 299
+            └── input.bin
+```
+
+Se ha probado ejecutar el comando **ax_run_model** con más de un input, sin suerte. Es por esto que, si bien **generate_test_files.py** genera 300 inputs (0 a 299) para calibración, al ejecutar el siguiente comando:
+> ax_run_model -m kws_int8.axmodel -i ./binary_for_npu/input/ -o ./binary_for_npu/output/ -l ./binary_for_npu/list.txt
+
+Con un **list.txt** con 0 a 299 inputs, no funciona, dando el error **} does not has input folder {./binary_for_npu/input/}, skipped.**:
+```
+root@m5stack-LLM:~# ax_run_model -m kws_int8.axmodel -i ./binary_for_npu/input/ -o ./binary_for_npu/output/ -l ./binary_for_npu/list.txt
+  Total found {300} input stimulus folders.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+} does not has input folder {./binary_for_npu/input/}, skipped.
+...
+} does not has input folder {./binary_for_npu/input/}, skipped.
+  Inferring model, total 1/299. Done.
+  ------------------------------------------------------
+  min =   1.331 ms   max =   1.331 ms   avg =   1.331 ms
+  ------------------------------------------------------
+
+root@m5stack-LLM:~# ls ./binary_for_npu/output/
+299
+```
+
+Se ve que de 300 archivos **input.bin** en cada uno de los directorios de inputs, solamente termina ejecutando la inferencia de un solo archivo, el directorio creado en **./binary_for_npu/outputs** corresponde al último, siendo en este caso el número **299**. Dentro del mismo se encuentra el archivo **output.bin** con un tamaño de 32 bytes que contiene la probabilidad de cada una de las 8 clases, en 4 bytes cada una, la suma total de probabilidad de las 8 clases da 1 o 100% de probabilidad.
+
+No se encuentra forma de ejecutar más de un input con **ax_run_model**, se prueban todos los parámetros posibles, no funciona ninguno. Es por esto que **list.txt** tiene que tener un sólo input, es decir solamente un 0 en la primera línea sin espacios, ni saltos de línea.
+
+El resto de los archivos **input.bin** con espectrogramas Mel=64 y T=98 no son ejecutados, se debe a un problema en **ax_run_model**.
+
+Igualmente sirve para probar un archivo real y, de esta manera, medir realmente los tiempos de inferencia con un ejemplo de la vida real. Esto confirma que lee correctamente el archivo **.bin** con datos reales y que en el directorio ./binary_for_npu/output
+
+## 13) Script para analizar el archivo de salida **output.bin** e indicar la probabilidad inferida por **ax_run_model**:
+Este script sirve para visualizar las probabilidades que generó la inferencia de archivos **.bin** con los espectrogramas log-Mel, el mismo se ejecuta en la PC y debe copiarse para esto el archivo desde el M5Stack AX630C a la PC, luego se ejecuta el scripty muestra las probabilidades detectadas por el modelo KWS entrenado para cada una de las 8 clases.
+
+Los valores en hexadecimal dentro de **output.bin** son los siguientes:
+
+- [0] 94 34 3D 41 = 11.825336456298828
+- [1] FA 0F 2B C0 = -2.6728501319885254
+- [2] 60 D1 78 3E = 0.24298620223999023
+- [3] 04 3F B0 BF = -1.3769230842590332
+- [4] C6 C6 06 C0 = -2.105882167816162
+- [5] D4 24 91 C0 = -4.535745620727539
+- [6] 20 FB C4 BF = -1.5389137268066406
+- [7] 70 D1 78 BF = -0.9719457626342773
+
+Para calcular la probabilidad de cada una de las clases se debe aplicar la función **Softmax**:
+> Softmax:  P(i) = exp(x_i) / (exp(x_1) + exp(x_2) + ... + exp(x_N))
+
+Donde:
+- **x_i** es el logit de la clase i.
+- **N** es el número total de clases.
+- **P(i)** es la probabilidad de la clase i.
+
+Probabilidades:
+
+- [0] ACOPLAR = 0.999983
+- [1] CANCELAR = 0.000001
+- [2] CONTINUAR = 0.000009
+- [3] FONDO = 0.000002
+- [4] LEVANTADO = 0.000001
+- [5] PRINCIPAL = 0.000000
+- [6] REPETIR = 0.000002
+- [7] SALIR = 0.000003
+
+Sum: 1.000000
+Top-1: [0] ACOPLAR (100.00%)
+
+Al final la palabra detectada por el KWS es ACOPLAR.
+
+## 14) Disclosure:
 Axera, AX630C, AX650N, M5Stack, Docker, Pulsar2, Audacity, Adobe Premiere Pro Microsoft, Windows 11 y Grabadora de Sonido de Windows son marcas comerciales o marcas registradas de sus respectivos propietarios. Todos los nombres de productos, logotipos y marcas mencionados se utilizan únicamente con fines de identificación. No reclamamos ningún derecho de propiedad sobre estas marcas, y no estamos afiliados, avalados ni somos responsables por ellas de ninguna manera.  
 
 Asimismo, no asumimos ninguna responsabilidad por problemas, daños o consecuencias que puedan surgir de la ejecución, uso o mala interpretación de los algoritmos, ejemplos o procedimientos proporcionados. Todo el contenido es únicamente con fines informativos y educativos, y cualquier implementación se realiza bajo el propio riesgo del usuario.  
